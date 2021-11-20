@@ -61,6 +61,10 @@ namespace R2S.Training.ADO
 
         private List<Customer> GetCustomerList(DataTable data)
         {
+            if (data == null)
+            {
+                return null;
+            }
             List<Customer> customerList = new List<Customer>();
             for (int i = 0; i < data.Rows.Count; i++)
             {

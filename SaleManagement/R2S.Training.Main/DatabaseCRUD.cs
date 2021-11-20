@@ -11,7 +11,7 @@ namespace R2S.Training.Main
             _sqlConnection = new SqlConnection(connectionString);
         }
 
-        public void OpenConnection()
+        public bool OpenConnection()
         {
             if (_sqlConnection.State == ConnectionState.Closed)
             {
@@ -20,12 +20,15 @@ namespace R2S.Training.Main
                     Console.WriteLine("---------------Connecting...");
                     _sqlConnection.Open();
                     Console.WriteLine("---------------Connected!");
+                    return true;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("---------------Error when connecting to database: " + e.Message);
+                    return false;
                 }
             }
+            return false;
         }
 
         public void CloseConnection()
@@ -38,63 +41,81 @@ namespace R2S.Training.Main
 
         public object DataCalculator(SqlCommand command)
         {
-            OpenConnection();
-            try
+            if (OpenConnection())
             {
-                command.Connection = _sqlConnection;
-                return command.ExecuteScalar();
+                try
+                {
+                    command.Connection = _sqlConnection;
+                    return command.ExecuteScalar();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e.Message);
+                    return null;
+                }
+                finally
+                {
+                    CloseConnection();
+                }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine("Error: " + e.Message);
                 return null;
-            }
-            finally
-            {
-                CloseConnection();
             }
         }
 
         public DataTable DataRetrieve(SqlCommand command)
         {
-            OpenConnection();
-            DataTable dataTable = new DataTable(); 
-            try
+            if (OpenConnection())
             {
-                command.Connection = _sqlConnection;
-                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                DataTable dataTable = new DataTable();
+                try
                 {
-                    adapter.Fill(dataTable);
+                    command.Connection = _sqlConnection;
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                    {
+                        adapter.Fill(dataTable);
+                    }
+                    return dataTable;
                 }
-                return dataTable;
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e.Message);
+                    return null;
+                }
+                finally
+                {
+                    CloseConnection();
+                }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine("Error: " + e.Message);
                 return null;
-            }
-            finally
-            {
-                CloseConnection();
             }
         }
 
         public int DataModifier(SqlCommand command)
         {
-            OpenConnection();
-            try
+            if (OpenConnection())
             {
-                command.Connection = _sqlConnection;
-                return command.ExecuteNonQuery();
+                try
+                {
+                    command.Connection = _sqlConnection;
+                    return command.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error: " + e.Message);
+                    return 0;
+                }
+                finally
+                {
+                    CloseConnection();
+                }
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine("Error: " + e.Message);
                 return 0;
-            }
-            finally
-            {
-                CloseConnection();
             }
         }
     }

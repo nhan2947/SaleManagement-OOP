@@ -67,6 +67,10 @@ namespace R2S.Training.ADO
 
         private List<Order> GetOrderList(DataTable data)
         {
+            if(data == null)
+            {
+                return null;
+            }
             List<Order> orderList = new List<Order>();
             for (int i = 0; i < data.Rows.Count; i++)
             {

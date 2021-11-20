@@ -49,6 +49,10 @@ namespace R2S.Training.ADO
 
         private List<LineItem> GetItemList(DataTable data)
         {
+            if (data == null)
+            {
+                return null;
+            }
             List<LineItem> itemList = new List<LineItem>();
             for (int i = 0; i < data.Rows.Count; i++)
             {
