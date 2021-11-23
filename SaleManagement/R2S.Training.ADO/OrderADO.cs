@@ -17,10 +17,9 @@ namespace R2S.Training.ADO
 
         public bool AddOrder(Order order)
         {
-            string sqlQuery = String.Format("INSERT INTO Orders (order_id,order_date,customer_id,employee_id,total) VALUES (@order_id,@order_date,@customer_id, @employee_id,@total);");
-            SqlCommand command = new SqlCommand(sqlQuery);
+            SqlCommand command = new SqlCommand("dbo.AddOrder");
+            command.CommandType = CommandType.StoredProcedure;
 
-            command.Parameters.AddWithValue("@order_id", order.OrderId);
             command.Parameters.AddWithValue("@order_date", order.OrderDate);
             command.Parameters.AddWithValue("@customer_id", order.CustomerId);
             command.Parameters.AddWithValue("@employee_id", order.EmployeeId);
@@ -38,6 +37,15 @@ namespace R2S.Training.ADO
             return true;
         }
 
+        public bool DeleteOrder(int orderId)
+        {
+            SqlCommand command = new SqlCommand("dbo.DeleteOrder");
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.AddWithValue("@order_id", orderId);
+            return _database.DataModifier(command) > 0;
+        }
+
         public double ComputeOrderTotal(int orderId)
         {
             SqlCommand command = new SqlCommand("SELECT dbo.ComputeOrderTotal(@order_id)");
@@ -52,6 +60,13 @@ namespace R2S.Training.ADO
             command.Parameters.AddWithValue("@customer_id", customerId);
             DataTable data = _database.DataRetrieve(command);
             return GetOrderList(data);
+        }
+
+        public bool IsOrderExist(int orderId)
+        {
+            SqlCommand command = new SqlCommand("SELECT dbo.IsOrderExist(@order_id)");
+            command.Parameters.AddWithValue("@order_id", orderId);
+            return Convert.ToBoolean(_database.DataCalculator(command));
         }
 
         public bool UpdateOrderTotal(int orderId)
@@ -84,7 +99,6 @@ namespace R2S.Training.ADO
             }
             return orderList;
         }
-
 
     }
 }
