@@ -10,6 +10,6 @@ namespace R2S.Training.ADO
         bool AddOrder(Order order);
         bool UpdateOrderTotal(int orderId);
         bool IsOrderExist(int orderId);
-        bool DeleteOrder(int orderId);
+        //bool DeleteOrder(int orderId);
     }
 }

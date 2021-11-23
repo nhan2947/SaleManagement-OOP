@@ -167,12 +167,6 @@ namespace R2S.Training.Main
 
             Console.WriteLine("Deleting customer...");
             _customerADO.DeleteCustomer(customerId);
-            List<Order> orders = _orderADO.GetAllOrdersByCustomerId(customerId);
-            foreach(Order order in orders)
-            {
-                _orderADO.DeleteOrder(order.OrderId);
-                _lineItemADO.DeleteLineItems(order.OrderId);
-            }
         }
 
         private void CreateOrder()

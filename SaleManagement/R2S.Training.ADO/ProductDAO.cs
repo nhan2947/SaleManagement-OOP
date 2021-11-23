@@ -19,7 +19,7 @@ namespace R2S.Training.ADO
                 string sqlQuery = String.Format("Select product_price from Product where product_id = @product_id");
                 SqlCommand command = new SqlCommand(sqlQuery);
 
-                command.Parameters.AddWithValue("@product_id", productId);
+            command.Parameters.AddWithValue("@product_id", productId);
                 DataTable dataTable = _database.DataRetrieve(command);
                 return Convert.ToDouble(dataTable.Rows[0]["product_price"]);
 

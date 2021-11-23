@@ -37,14 +37,14 @@ namespace R2S.Training.ADO
         }
 
 
-        public bool DeleteLineItems(int orderId)
-        {
-            string sqlQuery = String.Format("Delete from LineItem where order_id = @order_id");
-            SqlCommand command = new SqlCommand(sqlQuery);
+        //public bool DeleteLineItems(int orderId)
+        //{
+        //    string sqlQuery = String.Format("Delete from LineItem where order_id = @order_id");
+        //    SqlCommand command = new SqlCommand(sqlQuery);
 
-            command.Parameters.AddWithValue("@order_id", orderId);
-            return _database.DataModifier(command) > 0;
-        }
+        //    command.Parameters.AddWithValue("@order_id", orderId);
+        //    return _database.DataModifier(command) > 0;
+        //}
 
         public List<LineItem> GetAllItemsByOrderId(int orderId)
         {
