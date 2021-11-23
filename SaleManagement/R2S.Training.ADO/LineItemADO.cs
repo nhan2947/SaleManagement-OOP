@@ -1,6 +1,5 @@
 ﻿using R2S.Training.Entities;
 using R2S.Training.Main;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -17,10 +16,9 @@ namespace R2S.Training.ADO
 
         public bool AddLineItem(LineItem item)
         {
-            string sqlQuery = String.Format("Insert into LineItem (order_id,product_id,quantity, price) Values (@order_id,@product_id ,@quantity, @price) ;");
-
+            string sqlQuery = String.Format("Insert into LineItem (order_id,product_id,quantity, price) Values (@order_id,@product_id ,@quantity, @price)");
             SqlCommand command = new SqlCommand(sqlQuery);
-
+            
             command.Parameters.AddWithValue("@order_id", item.OrderId);
             command.Parameters.AddWithValue("@product_id", item.ProductId);
             command.Parameters.AddWithValue("@quantity", item.Quantity);
@@ -36,6 +34,16 @@ namespace R2S.Training.ADO
                 Console.WriteLine(ex.Message);
                 return false;
             }
+        }
+
+
+        public bool DeleteLineItems(int orderId)
+        {
+            string sqlQuery = String.Format("Delete from LineItem where order_id = @order_id");
+            SqlCommand command = new SqlCommand(sqlQuery);
+
+            command.Parameters.AddWithValue("@order_id", orderId);
+            return _database.DataModifier(command) > 0;
         }
 
         public List<LineItem> GetAllItemsByOrderId(int orderId)

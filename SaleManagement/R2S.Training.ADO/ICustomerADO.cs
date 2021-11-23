@@ -9,5 +9,6 @@ namespace R2S.Training.ADO
         bool AddCustomer(Customer customer);
         bool DeleteCustomer(int customerId);
         bool UpdateCustomer(Customer customer);
+        bool IsCustomerExist(int customerId);
     }
 }

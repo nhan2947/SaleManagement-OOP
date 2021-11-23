@@ -17,7 +17,6 @@ namespace R2S.Training.ADO
             SqlCommand command = new SqlCommand("dbo.AddCustomer");
             command.CommandType = CommandType.StoredProcedure;
 
-            command.Parameters.AddWithValue("@customer_id", customer.CustomerId);
             command.Parameters.AddWithValue("@customer_name", customer.CustomerName);
 
             try
@@ -47,6 +46,16 @@ namespace R2S.Training.ADO
             SqlCommand command = new SqlCommand(sqlQuery);
             DataTable data= _database.DataRetrieve(command);
             return GetCustomerList(data);
+        }
+
+        public bool IsCustomerExist(int customerId)
+        {
+            string sqlQuery = String.Format("SELECT * FROM dbo.Customer WHERE customer_id = @customer_id");
+            SqlCommand command = new SqlCommand(sqlQuery);
+            command.Parameters.AddWithValue("@customer_id", customerId);
+            
+            DataTable dataTable = _database.DataRetrieve(command);
+            return dataTable.Rows.Count > 0;
         }
 
         public bool UpdateCustomer(Customer customer)

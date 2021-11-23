@@ -17,9 +17,9 @@ namespace R2S.Training.Main
             {
                 try
                 {
-                    Console.WriteLine("---------------Connecting...");
+                    
                     _sqlConnection.Open();
-                    Console.WriteLine("---------------Connected!");
+                    
                     return true;
                 }
                 catch (Exception e)

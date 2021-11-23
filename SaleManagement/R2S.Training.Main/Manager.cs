@@ -9,7 +9,8 @@ namespace R2S.Training.Main
         private CustomerADO _customerADO;
         private OrderADO _orderADO;
         private LineItemADO _lineItemADO;
-
+        private EmployeeDAO _employeeDAO;
+        private ProductDAO _productDAO;
         private enum MenuOption
         {
             CreateCustomer = 1,
@@ -28,6 +29,8 @@ namespace R2S.Training.Main
             _customerADO = new CustomerADO(_database);
             _orderADO = new OrderADO(_database);
             _lineItemADO = new LineItemADO(_database);
+            _productDAO = new ProductDAO(_database);
+            _employeeDAO = new EmployeeDAO(_database);
         }
 
         public void Manage()
@@ -95,6 +98,11 @@ namespace R2S.Training.Main
 
         private void ShowDataTable<T>(List<T> list)
         {
+            if (list == null)
+            {
+                return;
+            }
+
             if (list is List<Customer>)
             {
                 Console.WriteLine(String.Format($"{"CustomerID",11}{"CustomerName",30}"));
@@ -121,47 +129,74 @@ namespace R2S.Training.Main
 
         private Customer CreateCustomerObject()
         {
-            Console.WriteLine("Customer ID: ");
-            int id = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Customer id: ");
+            int customerId = Input.GetInt();
             Console.WriteLine("Customer name: ");
             string name = Console.ReadLine();
-            Customer customer = new Customer(id, name);
+            Customer customer = new Customer(customerId, name);
             return customer;
         }
 
         private void CreateCustomer()
         {
-
             Customer customer = CreateCustomerObject();
+
             _customerADO.AddCustomer(customer);
         }
 
         private void UpdateCustomer()
         {
             Customer customer = CreateCustomerObject();
+            if (!_customerADO.IsCustomerExist(customer.CustomerId))
+            {
+                Console.WriteLine("Customer doesn't exist");
+                return;
+            }
             _customerADO.UpdateCustomer(customer);
         }
 
         private void DeleteCustomer()
         {
             Console.Write("Customer ID to remove: ");
-            int customerId = Convert.ToInt32(Console.ReadLine());
+            int customerId = Input.GetInt();
+            if (!_customerADO.IsCustomerExist(customerId))
+            {
+                Console.WriteLine("Customer doesn't exist");
+                return;
+            }
+
             Console.WriteLine("Deleting customer...");
             _customerADO.DeleteCustomer(customerId);
+            List<Order> orders = _orderADO.GetAllOrdersByCustomerId(customerId);
+            foreach(Order order in orders)
+            {
+                _orderADO.DeleteOrder(order.OrderId);
+                _lineItemADO.DeleteLineItems(order.OrderId);
+            }
         }
 
         private void CreateOrder()
         {
             Console.WriteLine("Creating order...");
-            Console.WriteLine("Order ID: ");
-            int id = Convert.ToInt32(Console.ReadLine());
             DateTime now = DateTime.Today;
             Console.WriteLine("Customer ID: ");
-            int customerId = Convert.ToInt32(Console.ReadLine());
+            int customerId = Input.GetInt();
+            if(!_customerADO.IsCustomerExist(customerId))
+            {
+                Console.WriteLine("Customer doesn't exist");
+                return;
+            }
+
             Console.WriteLine("Employee ID: ");
-            int employeeId = Convert.ToInt32(Console.ReadLine());
+            int employeeId = Input.GetInt();
+            if (!_employeeDAO.IsEmployeeExist(employeeId))
+            {
+                Console.WriteLine("Employee doesn't exist");
+                return;
+            }
+
             double total = 0;
-            Order order = new Order(id, now, customerId, employeeId, total);
+            Order order = new Order(0, now, customerId, employeeId, total);
             _orderADO.AddOrder(order);
         }
 
@@ -192,12 +227,23 @@ namespace R2S.Training.Main
             Console.WriteLine("Creating line item...");
             Console.WriteLine("Order ID: ");
             int orderId = Convert.ToInt32(Console.ReadLine());
+            if (!_orderADO.IsOrderExist(orderId))
+            {
+                Console.WriteLine("Order doesn't exist");
+                return;
+            }
+
             Console.WriteLine("Product ID: ");
             int productId = Convert.ToInt32(Console.ReadLine());
+            if (!_productDAO.IsProductExist(productId))
+            {
+                Console.WriteLine("Product doesn't exist");
+                return;
+            }
+
             Console.WriteLine("Quantity: ");
             int quantity = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Price: ");
-            double price = Convert.ToDouble(Console.ReadLine());
+            double price = _productDAO.GetProductPrice(productId) * quantity;
             LineItem lineItem = new LineItem(orderId, productId, quantity, price);
             _lineItemADO.AddLineItem(lineItem);
             _orderADO.UpdateOrderTotal(orderId);
